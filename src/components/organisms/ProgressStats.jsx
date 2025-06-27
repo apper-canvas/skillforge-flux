@@ -64,9 +64,6 @@ export default function ProgressStats({ enrolledCourses = [], progress = {} }) {
     return weeklyData
   }
 
-  const overallProgress = calculateOverallProgress()
-  const completedCourses = getCompletedCourses()
-  const subjectData = getSubjectDistribution()
 const overallProgress = calculateOverallProgress()
   const completedCourses = getCompletedCourses()
   const subjectData = getSubjectDistribution()
@@ -150,9 +147,8 @@ const overallProgress = calculateOverallProgress()
       'spanish': ['Hello and Goodbye', 'Pronunciation Practice'],
       'french': ['At the Restaurant', 'Basic Conversations']
     };
-    return lessonMap[topic] || ['Foundation Concepts'];
+return lessonMap[topic] || ['Foundation Concepts'];
   }
-  const weeklyProgress = getWeeklyProgress()
 
   // ApexCharts configuration for subject distribution (donut chart)
   const donutChartOptions = {
