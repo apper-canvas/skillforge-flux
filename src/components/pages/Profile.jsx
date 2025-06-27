@@ -22,7 +22,8 @@ const [formData, setFormData] = useState({
     skills: '',
     address: '',
     phone: '',
-    email: ''
+    email: '',
+    coursesCompleted: ''
   });
 
   // Load user profile on component mount
@@ -47,7 +48,8 @@ setFormData({
             skills: userProfile.skills || '',
             address: userProfile.address || '',
             phone: userProfile.phone || '',
-            email: userProfile.email || ''
+            email: userProfile.email || '',
+            coursesCompleted: userProfile.coursesCompleted || ''
           });
         } else {
           // No profile exists for user
@@ -59,7 +61,8 @@ setFormData({
             skills: '',
             address: '',
             phone: '',
-            email: user.emailAddress || ''
+            email: user.emailAddress || '',
+            coursesCompleted: ''
           });
         }
       } catch (err) {
@@ -122,7 +125,8 @@ setFormData({
         skills: profile.skills || '',
         address: profile.address || '',
         phone: profile.phone || '',
-        email: profile.email || ''
+        email: profile.email || '',
+        coursesCompleted: profile.coursesCompleted || ''
       });
     }
     setIsEditing(false);
@@ -302,6 +306,27 @@ setFormData({
                   </p>
                 )}
 </div>
+
+              {/* Courses Completed Field */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ApperIcon name="GraduationCap" size={20} className="text-primary-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Courses Completed</h3>
+                </div>
+                {isEditing ? (
+                  <textarea
+                    value={formData.coursesCompleted}
+                    onChange={(e) => handleInputChange('coursesCompleted', e.target.value)}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                    placeholder="List your completed courses..."
+                  />
+                ) : (
+                  <p className="text-gray-700 whitespace-pre-wrap">
+                    {formData.coursesCompleted || 'No completed courses listed'}
+                  </p>
+                )}
+              </div>
 
               {/* Address Field */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

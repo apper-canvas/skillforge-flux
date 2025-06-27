@@ -23,6 +23,7 @@ fields: [
           { field: { Name: "address" } },
           { field: { Name: "phone" } },
           { field: { Name: "email" } },
+          { field: { Name: "coursesCompleted" } },
           { field: { Name: "CreatedOn" } },
           { field: { Name: "CreatedBy" } },
           { field: { Name: "ModifiedOn" } },
@@ -66,6 +67,7 @@ fields: [
           { field: { Name: "address" } },
           { field: { Name: "phone" } },
           { field: { Name: "email" } },
+          { field: { Name: "coursesCompleted" } },
           { field: { Name: "CreatedOn" } },
           { field: { Name: "CreatedBy" } },
           { field: { Name: "ModifiedOn" } },
@@ -108,7 +110,8 @@ const updateableData = {
         skills: profileData.skills || '',
         address: profileData.address || '',
         phone: profileData.phone || '',
-        email: profileData.email || ''
+        email: profileData.email || '',
+        coursesCompleted: profileData.coursesCompleted || ''
       };
 
       const params = {
@@ -161,7 +164,8 @@ const updateableData = {
         skills: profileData.skills || '',
         address: profileData.address || '',
         phone: profileData.phone || '',
-        email: profileData.email || ''
+        email: profileData.email || '',
+        coursesCompleted: profileData.coursesCompleted || ''
       };
 
       const params = {
