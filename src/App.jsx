@@ -7,8 +7,8 @@ import CourseDetail from '@/components/pages/CourseDetail';
 import LearningInterface from '@/components/pages/LearningInterface';
 import Dashboard from '@/components/pages/Dashboard';
 import Community from '@/components/pages/Community';
+import NewDiscussion from '@/components/pages/NewDiscussion';
 import DiscussionThread from '@/components/pages/DiscussionThread';
-
 function App() {
   return (
     <BrowserRouter>
@@ -24,8 +24,9 @@ function App() {
             <Route path="/" element={<CourseCatalog />} />
             <Route path="/course/:courseId" element={<CourseDetail />} />
             <Route path="/learn/:courseId/:lessonId" element={<LearningInterface />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+<Route path="/dashboard" element={<Dashboard />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/community/new" element={<NewDiscussion />} />
             <Route path="/community/thread/:threadId" element={<DiscussionThread />} />
           </Routes>
         </motion.main>
