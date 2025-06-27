@@ -17,8 +17,8 @@ const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: 'BarChart3' },
     { name: 'Profile', href: '/profile', icon: 'User' },
     { name: 'Community', href: '/community', icon: 'Users' },
+    { name: 'Reports', href: '/reports', icon: 'BarChart3' },
   ];
-
 const isActive = (path) => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;

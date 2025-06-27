@@ -13,6 +13,7 @@ import Profile from '@/components/pages/Profile';
 import Community from '@/components/pages/Community';
 import NewDiscussion from '@/components/pages/NewDiscussion';
 import DiscussionThread from '@/components/pages/DiscussionThread';
+import Reports from '@/components/pages/Reports';
 import Login from '@/components/pages/Login';
 import Signup from '@/components/pages/Signup';
 import Callback from '@/components/pages/Callback';
@@ -145,10 +146,11 @@ function AppContent() {
             <Route path="/course/:courseId" element={<CourseDetail />} />
             <Route path="/learn/:courseId/:lessonId" element={<LearningInterface />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/community" element={<Community />} />
+<Route path="/community" element={<Community />} />
 <Route path="/community/new" element={<NewDiscussion />} />
             <Route path="/community/thread/:threadId" element={<DiscussionThread />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/reports" element={<Reports />} />
           </Routes>
         </motion.main>
         <ToastContainer
