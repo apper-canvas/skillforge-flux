@@ -337,17 +337,28 @@ const handleDownloadCertificate = async () => {
                   </div>
                 </div>
                 
-                <div className="space-y-2 ml-11">
+<div className="space-y-2 ml-11">
                   {module.lessons?.map((lesson, lessonIndex) => (
                     <div key={lesson.id} className="flex items-center gap-2 text-sm">
                       <ApperIcon
-                        name={lesson.type === 'video' ? 'Play' : 'HelpCircle'}
+                        name={
+                          lesson.type === 'youtube' ? 'Youtube' :
+                          lesson.type === 'video' ? 'Play' : 'HelpCircle'
+                        }
                         size={14}
-                        className="text-gray-400"
+                        className={
+                          lesson.type === 'youtube' ? 'text-red-500' :
+                          lesson.type === 'video' ? 'text-gray-400' : 'text-gray-400'
+                        }
                       />
                       <span className="text-gray-700">
                         {lessonIndex + 1}. {lesson.title}
                       </span>
+                      {lesson.type === 'youtube' && (
+                        <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                          YouTube
+                        </span>
+                      )}
                       {lesson.duration && (
                         <span className="text-gray-400 ml-auto">
                           {lesson.duration}min

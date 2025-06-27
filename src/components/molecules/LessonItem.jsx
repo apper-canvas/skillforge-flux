@@ -10,8 +10,9 @@ const LessonItem = ({ lesson, courseId, isActive = false, completed = false }) =
     return 'BookOpen';
   };
 
-  const getIconColor = () => {
+const getIconColor = () => {
     if (completed) return 'text-success';
+    if (lesson.type === 'youtube') return 'text-red-500';
     if (isActive) return 'text-primary-600';
     return 'text-gray-400';
   };

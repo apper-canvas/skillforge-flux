@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const courseService = {
+export const youtubeVideoService = {
   async getAll() {
     try {
       await delay(300);
@@ -17,17 +17,18 @@ export const courseService = {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "Tags" } },
+          { field: { Name: "video_id" } },
+          { 
+            field: { Name: "course_id" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "title" } },
           { field: { Name: "description" } },
-          { field: { Name: "instructor" } },
-          { field: { Name: "duration" } },
-          { field: { Name: "subject" } },
-          { field: { Name: "difficulty" } },
-          { field: { Name: "modules" } }
+          { field: { Name: "url" } }
         ]
       };
       
-      const response = await apperClient.fetchRecords('course', params);
+      const response = await apperClient.fetchRecords('youtube_video', params);
       
       if (!response.success) {
         console.error(response.message);
@@ -39,23 +40,22 @@ export const courseService = {
         return [];
       }
       
-      return response.data.map(course => ({
-        id: course.Id.toString(),
-        title: course.title || course.Name,
-        subject: course.subject,
-        difficulty: course.difficulty,
-        instructor: course.instructor,
-        duration: course.duration,
-        description: course.description,
-        modules: course.modules ? JSON.parse(course.modules) : []
+      return response.data.map(video => ({
+        id: video.Id.toString(),
+        videoId: video.video_id,
+        courseId: video.course_id?.Id?.toString() || '',
+        courseName: video.course_id?.Name || '',
+        title: video.title || video.Name,
+        description: video.description,
+        url: video.url
       }));
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      console.error("Error fetching YouTube videos:", error);
       return [];
     }
   },
 
-async getById(id) {
+  async getById(id) {
     try {
       await delay(200);
       
@@ -69,17 +69,18 @@ async getById(id) {
         fields: [
           { field: { Name: "Name" } },
           { field: { Name: "Tags" } },
+          { field: { Name: "video_id" } },
+          { 
+            field: { Name: "course_id" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "title" } },
           { field: { Name: "description" } },
-          { field: { Name: "instructor" } },
-          { field: { Name: "duration" } },
-          { field: { Name: "subject" } },
-          { field: { Name: "difficulty" } },
-          { field: { Name: "modules" } }
+          { field: { Name: "url" } }
         ]
       };
       
-      const response = await apperClient.getRecordById('course', parseInt(id), params);
+      const response = await apperClient.getRecordById('youtube_video', parseInt(id), params);
       
       if (!response.success) {
         console.error(response.message);
@@ -87,80 +88,80 @@ async getById(id) {
       }
       
       if (!response.data) {
-        throw new Error('Course not found');
+        throw new Error('YouTube video not found');
       }
-
-      // Fetch related YouTube videos
-      let youtubeVideos = [];
-      try {
-        const videoParams = {
-          fields: [
-            { field: { Name: "Name" } },
-            { field: { Name: "video_id" } },
-            { field: { Name: "title" } },
-            { field: { Name: "description" } },
-            { field: { Name: "url" } }
-          ],
-          where: [
-            {
-              FieldName: "course_id",
-              Operator: "EqualTo",
-              Values: [parseInt(id)]
-            }
-          ]
-        };
-        
-        const videoResponse = await apperClient.fetchRecords('youtube_video', videoParams);
-        
-        if (videoResponse.success && videoResponse.data) {
-          youtubeVideos = videoResponse.data.map(video => ({
-            id: video.Id.toString(),
-            videoId: video.video_id,
-            title: video.title || video.Name,
-            description: video.description,
-            url: video.url,
-            type: 'youtube',
-            duration: 10 // Default duration for YouTube videos
-          }));
-        }
-      } catch (videoError) {
-        console.log('No YouTube videos found for course:', id);
-      }
-
-      const course = {
+      
+      return {
         id: response.data.Id.toString(),
+        videoId: response.data.video_id,
+        courseId: response.data.course_id?.Id?.toString() || '',
+        courseName: response.data.course_id?.Name || '',
         title: response.data.title || response.data.Name,
-        subject: response.data.subject,
-        difficulty: response.data.difficulty,
-        instructor: response.data.instructor,
-        duration: response.data.duration,
         description: response.data.description,
-        modules: response.data.modules ? JSON.parse(response.data.modules) : []
+        url: response.data.url
       };
-
-      // Integrate YouTube videos into modules
-      if (youtubeVideos.length > 0) {
-        if (course.modules.length === 0) {
-          // Create a default module for YouTube videos
-          course.modules = [{
-            id: 'youtube-module',
-            title: 'Video Lessons',
-            lessons: youtubeVideos
-          }];
-        } else {
-          // Add YouTube videos to the first module or create a new one
-          course.modules[0].lessons = [...(course.modules[0].lessons || []), ...youtubeVideos];
-        }
-      }
-
-      return course;
     } catch (error) {
-      console.error(`Error fetching course with ID ${id}:`, error);
+      console.error(`Error fetching YouTube video with ID ${id}:`, error);
       throw error;
     }
   },
 
-  async create(courseData) {
+  async getByCourseId(courseId) {
+    try {
+      await delay(300);
+      
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "video_id" } },
+          { field: { Name: "course_id" } },
+          { field: { Name: "title" } },
+          { field: { Name: "description" } },
+          { field: { Name: "url" } }
+        ],
+        where: [
+          {
+            FieldName: "course_id",
+            Operator: "EqualTo",
+            Values: [parseInt(courseId)]
+          }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords('youtube_video', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+      
+      if (!response.data || response.data.length === 0) {
+        return [];
+      }
+      
+      return response.data.map(video => ({
+        id: video.Id.toString(),
+        videoId: video.video_id,
+        courseId: video.course_id?.toString() || courseId,
+        title: video.title || video.Name,
+        description: video.description,
+        url: video.url,
+        type: 'youtube'
+      }));
+    } catch (error) {
+      console.error(`Error fetching YouTube videos for course ${courseId}:`, error);
+      return [];
+    }
+  },
+
+  async create(videoData) {
     try {
       await delay(400);
       
@@ -172,18 +173,16 @@ async getById(id) {
       
       const params = {
         records: [{
-          Name: courseData.title,
-          title: courseData.title,
-          description: courseData.description,
-          instructor: courseData.instructor,
-          duration: courseData.duration,
-          subject: courseData.subject,
-          difficulty: courseData.difficulty,
-          modules: JSON.stringify(courseData.modules || [])
+          Name: videoData.title,
+          video_id: videoData.videoId,
+          course_id: parseInt(videoData.courseId),
+          title: videoData.title,
+          description: videoData.description,
+          url: videoData.url
         }]
       };
       
-      const response = await apperClient.createRecord('course', params);
+      const response = await apperClient.createRecord('youtube_video', params);
       
       if (!response.success) {
         console.error(response.message);
@@ -207,28 +206,26 @@ async getById(id) {
         }
         
         if (successfulRecords.length > 0) {
-          const newCourse = successfulRecords[0].data;
+          const newVideo = successfulRecords[0].data;
           return {
-            id: newCourse.Id.toString(),
-            title: newCourse.title || newCourse.Name,
-            subject: newCourse.subject,
-            difficulty: newCourse.difficulty,
-            instructor: newCourse.instructor,
-            duration: newCourse.duration,
-            description: newCourse.description,
-            modules: newCourse.modules ? JSON.parse(newCourse.modules) : []
+            id: newVideo.Id.toString(),
+            videoId: newVideo.video_id,
+            courseId: newVideo.course_id?.toString() || videoData.courseId,
+            title: newVideo.title || newVideo.Name,
+            description: newVideo.description,
+            url: newVideo.url
           };
         }
       }
       
-      throw new Error('Failed to create course');
+      throw new Error('Failed to create YouTube video');
     } catch (error) {
-      console.error("Error creating course:", error);
+      console.error("Error creating YouTube video:", error);
       throw error;
     }
   },
 
-  async update(id, courseData) {
+  async update(id, videoData) {
     try {
       await delay(300);
       
@@ -241,18 +238,16 @@ async getById(id) {
       const params = {
         records: [{
           Id: parseInt(id),
-          Name: courseData.title,
-          title: courseData.title,
-          description: courseData.description,
-          instructor: courseData.instructor,
-          duration: courseData.duration,
-          subject: courseData.subject,
-          difficulty: courseData.difficulty,
-          modules: JSON.stringify(courseData.modules || [])
+          Name: videoData.title,
+          video_id: videoData.videoId,
+          course_id: parseInt(videoData.courseId),
+          title: videoData.title,
+          description: videoData.description,
+          url: videoData.url
         }]
       };
       
-      const response = await apperClient.updateRecord('course', params);
+      const response = await apperClient.updateRecord('youtube_video', params);
       
       if (!response.success) {
         console.error(response.message);
@@ -276,23 +271,21 @@ async getById(id) {
         }
         
         if (successfulUpdates.length > 0) {
-          const updatedCourse = successfulUpdates[0].data;
+          const updatedVideo = successfulUpdates[0].data;
           return {
-            id: updatedCourse.Id.toString(),
-            title: updatedCourse.title || updatedCourse.Name,
-            subject: updatedCourse.subject,
-            difficulty: updatedCourse.difficulty,
-            instructor: updatedCourse.instructor,
-            duration: updatedCourse.duration,
-            description: updatedCourse.description,
-            modules: updatedCourse.modules ? JSON.parse(updatedCourse.modules) : []
+            id: updatedVideo.Id.toString(),
+            videoId: updatedVideo.video_id,
+            courseId: updatedVideo.course_id?.toString() || videoData.courseId,
+            title: updatedVideo.title || updatedVideo.Name,
+            description: updatedVideo.description,
+            url: updatedVideo.url
           };
         }
       }
       
-      throw new Error('Failed to update course');
+      throw new Error('Failed to update YouTube video');
     } catch (error) {
-      console.error("Error updating course:", error);
+      console.error("Error updating YouTube video:", error);
       throw error;
     }
   },
@@ -311,7 +304,7 @@ async getById(id) {
         RecordIds: [parseInt(id)]
       };
       
-      const response = await apperClient.deleteRecord('course', params);
+      const response = await apperClient.deleteRecord('youtube_video', params);
       
       if (!response.success) {
         console.error(response.message);
@@ -336,7 +329,7 @@ async getById(id) {
       
       return false;
     } catch (error) {
-      console.error("Error deleting course:", error);
+      console.error("Error deleting YouTube video:", error);
       throw error;
     }
   }
