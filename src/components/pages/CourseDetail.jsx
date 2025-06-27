@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import { generateCertificate } from "@/services/certificateService";
 import { courseService } from "@/services/api/courseService";
 import { progressService } from "@/services/api/progressService";
+import { enrollmentService } from "@/services/api/enrollmentService";
 import ApperIcon from "@/components/ApperIcon";
 import CertificateTemplate from "@/components/molecules/CertificateTemplate";
 import Loading from "@/components/ui/Loading";
@@ -12,6 +14,7 @@ import Error from "@/components/ui/Error";
 import ProgressRing from "@/components/atoms/ProgressRing";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -20,9 +23,16 @@ const navigate = useNavigate();
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [enrolling, setEnrolling] = useState(false);
+const [enrolling, setEnrolling] = useState(false);
   const [generatingCertificate, setGeneratingCertificate] = useState(false);
+  const [showEnrollmentForm, setShowEnrollmentForm] = useState(false);
+  const [enrollmentData, setEnrollmentData] = useState({
+    course: courseId,
+    user: '',
+    enrollmentdate: new Date().toISOString().split('T')[0]
+  });
   const certificateRef = useRef();
+  const { user } = useSelector((state) => state.user);
   useEffect(() => {
     loadCourse();
     loadProgress();
@@ -50,9 +60,30 @@ const navigate = useNavigate();
     }
   };
 
-  const handleEnroll = async () => {
+const handleEnroll = () => {
+    setShowEnrollmentForm(true);
+  };
+
+  const handleEnrollmentSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!enrollmentData.user) {
+      toast.error('Please select a user');
+      return;
+    }
+
     try {
       setEnrolling(true);
+      
+      // Create enrollment record
+      await enrollmentService.create({
+        course: courseId,
+        user: enrollmentData.user,
+        enrollmentdate: enrollmentData.enrollmentdate,
+        name: `${course?.title || 'Course'} - Enrollment`
+      });
+
+      // Create progress record
       await progressService.create({
         courseId,
         completedLessons: {},
@@ -61,6 +92,7 @@ const navigate = useNavigate();
       });
       
       toast.success('Successfully enrolled in course!');
+      setShowEnrollmentForm(false);
       loadProgress();
       
       // Navigate to first lesson
@@ -73,6 +105,13 @@ const navigate = useNavigate();
     } finally {
       setEnrolling(false);
     }
+  };
+
+  const handleFormChange = (field, value) => {
+    setEnrollmentData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleContinue = () => {
@@ -239,10 +278,9 @@ const handleDownloadCertificate = async () => {
                     </div>
                   </div>
                 </>
-              ) : (
+) : (
                 <Button
                   onClick={handleEnroll}
-                  loading={enrolling}
                   variant="primary"
                   size="lg"
                   icon="Plus"
@@ -387,6 +425,80 @@ const handleDownloadCertificate = async () => {
           studentName="Student"
 />
       </div>
+
+      {/* Enrollment Form Modal */}
+      {showEnrollmentForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-800">Enroll in Course</h3>
+              <button
+                onClick={() => setShowEnrollmentForm(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <ApperIcon name="X" size={24} />
+              </button>
+            </div>
+
+            <form onSubmit={handleEnrollmentSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Course
+                </label>
+                <input
+                  type="text"
+                  value={course?.title || 'Loading...'}
+                  disabled
+                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 text-gray-500"
+                />
+              </div>
+
+              <Input
+                label="User ID"
+                type="number"
+                placeholder="Enter user ID"
+                value={enrollmentData.user}
+                onChange={(e) => handleFormChange('user', e.target.value)}
+                icon="User"
+                required
+              />
+
+              <Input
+                label="Enrollment Date"
+                type="date"
+                value={enrollmentData.enrollmentdate}
+                onChange={(e) => handleFormChange('enrollmentdate', e.target.value)}
+                icon="Calendar"
+                required
+              />
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  onClick={() => setShowEnrollmentForm(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  loading={enrolling}
+                  variant="primary"
+                  className="flex-1"
+                >
+                  Enroll Now
+                </Button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
