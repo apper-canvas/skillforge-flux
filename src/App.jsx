@@ -7,6 +7,7 @@ import CourseDetail from '@/components/pages/CourseDetail';
 import LearningInterface from '@/components/pages/LearningInterface';
 import Dashboard from '@/components/pages/Dashboard';
 import Community from '@/components/pages/Community';
+import DiscussionThread from '@/components/pages/DiscussionThread';
 
 function App() {
   return (
@@ -19,12 +20,13 @@ function App() {
           transition={{ duration: 0.5 }}
           className="pt-20"
         >
-          <Routes>
+<Routes>
             <Route path="/" element={<CourseCatalog />} />
             <Route path="/course/:courseId" element={<CourseDetail />} />
             <Route path="/learn/:courseId/:lessonId" element={<LearningInterface />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/community/thread/:threadId" element={<DiscussionThread />} />
           </Routes>
         </motion.main>
         

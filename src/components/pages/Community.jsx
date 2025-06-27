@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { communityService } from '@/services/api/communityService';
 import ApperIcon from '@/components/ApperIcon';
@@ -10,6 +11,7 @@ import Error from '@/components/ui/Error';
 import Empty from '@/components/ui/Empty';
 
 const Community = () => {
+  const navigate = useNavigate();
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -150,10 +152,13 @@ const Community = () => {
               transition={{ delay: index * 0.1 }}
               className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200"
             >
-              <div className="flex items-start justify-between mb-4">
+<div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-display font-bold text-gray-800 hover:text-primary-600 cursor-pointer">
+                    <h3 
+                      className="text-lg font-display font-bold text-gray-800 hover:text-primary-600 cursor-pointer transition-colors duration-200"
+                      onClick={() => navigate(`/community/thread/${discussion.Id}`)}
+                    >
                       {discussion.title}
                     </h3>
                     <Badge variant={getCategoryColor(discussion.category)} size="sm">
