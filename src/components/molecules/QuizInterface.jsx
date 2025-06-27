@@ -52,24 +52,69 @@ const QuizInterface = ({ lesson, onComplete }) => {
     }));
   };
 
-  const handleSubmit = () => {
+const handleSubmit = () => {
     let correctAnswers = 0;
+    const questionResults = [];
+    
     questions.forEach((question, index) => {
-      if (answers[index] === question.correct) {
+      const isCorrect = answers[index] === question.correct;
+      if (isCorrect) {
         correctAnswers++;
       }
+      
+      // Capture detailed question-level results for analytics
+      questionResults.push({
+        questionId: question.id,
+        question: question.question,
+        selectedAnswer: answers[index],
+        correctAnswer: question.correct,
+        correct: isCorrect,
+        topic: question.topic || getQuestionTopic(question.question),
+        difficulty: question.difficulty || 'medium'
+      });
     });
     
     const finalScore = (correctAnswers / questions.length) * 100;
     setScore(finalScore);
     setShowResults(true);
     
+    // Store detailed quiz results for analytics
+    const quizResult = {
+      lessonId: lesson.id,
+      lessonTitle: lesson.title,
+      score: finalScore,
+      totalQuestions: questions.length,
+      correctAnswers,
+      completedAt: new Date().toISOString(),
+      questionResults,
+      timeSpent: 300 - timeLeft
+    };
+    
+    // Save quiz results for analytics (in a real app, this would be sent to a service)
+    if (typeof window !== 'undefined') {
+      const existingResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+      existingResults.push(quizResult);
+      localStorage.setItem('quizResults', JSON.stringify(existingResults));
+    }
+    
     if (finalScore >= (lesson.content?.passingScore || 70)) {
       toast.success(`Congratulations! You scored ${finalScore.toFixed(0)}%`);
-      if (onComplete) onComplete();
+      if (onComplete) onComplete(quizResult);
     } else {
       toast.error(`You scored ${finalScore.toFixed(0)}%. Try again to pass!`);
     }
+  };
+
+  // Helper function to extract topic from question content
+  const getQuestionTopic = (questionText) => {
+    const text = questionText.toLowerCase();
+    if (text.includes('react') || text.includes('hook') || text.includes('component')) return 'react-basics';
+    if (text.includes('jsx') || text.includes('component')) return 'components';
+    if (text.includes('javascript') || text.includes('es6') || text.includes('arrow')) return 'javascript';
+    if (text.includes('limit') || text.includes('calculus') || text.includes('math')) return 'math';
+    if (text.includes('spanish') || text.includes('hola') || text.includes('greeting')) return 'spanish';
+    if (text.includes('french') || text.includes('restaurant') || text.includes('bonjour')) return 'french';
+    return 'general';
   };
 
   const resetQuiz = () => {

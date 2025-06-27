@@ -127,11 +127,10 @@ const Dashboard = () => {
         <p className="text-lg text-gray-600">
           Track your progress and continue your learning journey
         </p>
-      </motion.div>
+</motion.div>
 
-      {/* Progress Stats */}
+      {/* Progress Stats with Quiz Analytics */}
       <ProgressStats enrolledCourses={enrolledCourses} progress={progress} />
-
       {/* Recent Activity */}
       {recentCourses.length > 0 && (
         <motion.section

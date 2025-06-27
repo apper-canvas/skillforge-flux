@@ -1,9 +1,11 @@
-import { motion } from 'framer-motion'
-import Chart from 'react-apexcharts'
-import ApperIcon from '@/components/ApperIcon'
-import ProgressRing from '@/components/atoms/ProgressRing'
-import Badge from '@/components/atoms/Badge'
-
+import { motion } from "framer-motion";
+import Chart from "react-apexcharts";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import React from "react";
+import ApperIcon from "@/components/ApperIcon";
+import ProgressRing from "@/components/atoms/ProgressRing";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 export default function ProgressStats({ enrolledCourses = [], progress = {} }) {
   // Calculate overall progress
   function calculateOverallProgress() {
@@ -65,6 +67,91 @@ export default function ProgressStats({ enrolledCourses = [], progress = {} }) {
   const overallProgress = calculateOverallProgress()
   const completedCourses = getCompletedCourses()
   const subjectData = getSubjectDistribution()
+const overallProgress = calculateOverallProgress()
+  const completedCourses = getCompletedCourses()
+  const subjectData = getSubjectDistribution()
+  const weeklyProgress = getWeeklyProgress()
+
+  // Helper functions for quiz analytics
+  function getQuizAnalytics() {
+    const analytics = {
+      totalQuizzes: 0,
+      averageScore: 0,
+      topicPerformance: {},
+      weakAreas: []
+    };
+
+    enrolledCourses.forEach(course => {
+      const courseProgress = progress[course.id];
+      if (courseProgress?.quizResults) {
+        analytics.totalQuizzes += courseProgress.quizResults.length;
+        
+        courseProgress.quizResults.forEach(result => {
+          result.questionResults?.forEach(qResult => {
+            const topic = qResult.topic || 'general';
+            if (!analytics.topicPerformance[topic]) {
+              analytics.topicPerformance[topic] = { correct: 0, total: 0 };
+            }
+            analytics.topicPerformance[topic].total++;
+            if (qResult.correct) {
+              analytics.topicPerformance[topic].correct++;
+            }
+          });
+        });
+      }
+    });
+
+    // Calculate percentages
+    Object.keys(analytics.topicPerformance).forEach(topic => {
+      const perf = analytics.topicPerformance[topic];
+      perf.percentage = perf.total > 0 ? (perf.correct / perf.total) * 100 : 0;
+    });
+
+    return analytics;
+  }
+
+  function getTopicPerformanceData() {
+    const analytics = getQuizAnalytics();
+    return Object.entries(analytics.topicPerformance).map(([topic, data]) => ({
+      topic: topic.replace('-', ' '),
+      percentage: Math.round(data.percentage),
+      correct: data.correct,
+      total: data.total
+    }));
+  }
+
+  function getWeakAreas() {
+    const analytics = getQuizAnalytics();
+    return Object.entries(analytics.topicPerformance)
+      .filter(([_, data]) => data.percentage < 70)
+      .map(([topic, data]) => ({
+        topic,
+        percentage: data.percentage,
+        recommendedLessons: getRecommendedLessons(topic)
+      }))
+      .sort((a, b) => a.percentage - b.percentage);
+  }
+
+  function getPracticeRecommendations() {
+    return getWeakAreas().map(area => ({
+      topic: area.topic,
+      currentScore: area.percentage,
+      recommendedLessons: area.recommendedLessons,
+      priority: area.percentage < 50 ? 'high' : 'medium'
+    }));
+  }
+
+  function getRecommendedLessons(topic) {
+    const lessonMap = {
+      'react-basics': ['What is React?', 'Setting up React'],
+      'components': ['Understanding Components', 'JSX Syntax'],
+      'javascript': ['ES6+ Features', 'Arrow Functions'],
+      'math': ['Introduction to Limits', 'Limit Laws'],
+      'spanish': ['Hello and Goodbye', 'Pronunciation Practice'],
+      'french': ['At the Restaurant', 'Basic Conversations']
+    };
+    return lessonMap[topic] || ['Foundation Concepts'];
+  }
   const weeklyProgress = getWeeklyProgress()
 
   // ApexCharts configuration for subject distribution (donut chart)
@@ -313,9 +400,143 @@ export default function ProgressStats({ enrolledCourses = [], progress = {} }) {
             <Badge variant="accent" className="flex items-center gap-2">
               <ApperIcon name="Zap" className="w-4 h-4" />
               Weekly Warrior
-            </Badge>
+</Badge>
           )}
         </div>
+      </motion.div>
+
+      {/* Quiz Performance Analysis */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="mt-8 pt-6 border-t border-gray-200"
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <ApperIcon name="Brain" className="w-6 h-6 text-purple-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Quiz Performance Analysis</h3>
+        </div>
+
+        {getQuizAnalytics().totalQuizzes > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Topic Performance Chart */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h4 className="text-md font-semibold text-gray-900 mb-4">Topic Performance</h4>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={getTopicPerformanceData()}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="topic" 
+                      tick={{ fontSize: 12 }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                    />
+                    <YAxis />
+                    <Tooltip 
+                      formatter={(value) => [`${value}%`, 'Performance']}
+                      labelFormatter={(label) => `Topic: ${label}`}
+                    />
+                    <Bar 
+                      dataKey="percentage" 
+                      fill="#8884d8"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Weak Areas & Recommendations */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h4 className="text-md font-semibold text-gray-900 mb-4">Areas for Improvement</h4>
+              {getWeakAreas().length > 0 ? (
+                <div className="space-y-4">
+                  {getWeakAreas().slice(0, 3).map((area, index) => (
+                    <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium text-gray-900 capitalize">
+                          {area.topic.replace('-', ' ')}
+                        </h5>
+                        <div className={`px-2 py-1 rounded text-xs font-medium ${
+                          area.percentage < 50 
+                            ? 'bg-red-100 text-red-800'
+                            : area.percentage < 70
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {area.percentage.toFixed(0)}%
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Current performance: {area.percentage.toFixed(0)}% - Needs improvement
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-gray-700">Recommended Practice:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {area.recommendedLessons?.slice(0, 2).map((lesson, idx) => (
+                            <Badge key={idx} variant="outline" className="text-xs">
+                              {lesson}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {getWeakAreas().length > 3 && (
+                    <div className="text-center">
+                      <Button variant="outline" size="sm">
+                        View All Recommendations
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <ApperIcon name="CheckCircle" className="w-12 h-12 mx-auto mb-2 text-green-500" />
+                  <p className="text-gray-600">Great job! No weak areas identified.</p>
+                  <p className="text-sm text-gray-500">Keep up the excellent work!</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-8 bg-gray-50 rounded-lg">
+            <ApperIcon name="Target" className="w-12 h-12 mx-auto mb-2 text-gray-400 opacity-50" />
+            <p className="text-gray-600 mb-2">No quiz data available yet</p>
+            <p className="text-sm text-gray-500">Complete some quizzes to see your performance analysis</p>
+          </div>
+        )}
+
+        {/* Practice Suggestions */}
+        {getQuizAnalytics().totalQuizzes > 0 && getWeakAreas().length > 0 && (
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-start gap-3">
+              <ApperIcon name="Lightbulb" className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div>
+                <h5 className="font-medium text-blue-900 mb-1">Personalized Study Plan</h5>
+                <p className="text-sm text-blue-800 mb-3">
+                  Based on your quiz performance, we recommend focusing on these areas:
+                </p>
+                <div className="space-y-2">
+                  {getPracticeRecommendations().slice(0, 2).map((rec, index) => (
+                    <div key={index} className="text-sm">
+                      <span className="font-medium text-blue-900 capitalize">
+                        {rec.topic.replace('-', ' ')}:
+                      </span>
+                      <span className="text-blue-800 ml-1">
+                        {rec.recommendedLessons[0]} 
+                        {rec.priority === 'high' && ' (High Priority)'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </motion.div>
     </div>
   )
