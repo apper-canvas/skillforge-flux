@@ -1,21 +1,27 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import ApperIcon from '@/components/ApperIcon';
+import React, { useContext, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { AuthContext } from "../../App";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user } = useSelector((state) => state.user);
+  const { logout } = useContext(AuthContext);
 
   const navItems = [
-    { path: '/', label: 'Browse Courses', icon: 'BookOpen' },
-    { path: '/dashboard', label: 'My Learning', icon: 'User' },
-    { path: '/community', label: 'Community', icon: 'MessageCircle' }
+    { name: 'Courses', href: '/', icon: 'BookOpen' },
+    { name: 'Dashboard', href: '/dashboard', icon: 'BarChart3' },
+    { name: 'Community', href: '/community', icon: 'Users' },
   ];
 
-  const isActive = (path) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+const isActive = (path) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
   };
 
   return (
@@ -43,60 +49,103 @@ const Header = () => {
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <Link
-                key={item.path}
-                to={item.path}
+                key={item.name}
+                to={item.href}
                 className={`
                   flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                  ${isActive(item.path)
+                  ${isActive(item.href)
                     ? 'bg-gradient-to-r from-primary-100 to-primary-200 text-primary-700'
                     : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
                   }
                 `}
               >
                 <ApperIcon name={item.icon} size={16} />
-                {item.label}
+                {item.name}
               </Link>
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <ApperIcon name={isMobileMenuOpen ? "X" : "Menu"} size={20} />
-          </button>
+          {/* User Menu */}
+          <div className="hidden md:flex items-center gap-4">
+            {user && (
+              <div className="flex items-center gap-3">
+                <div className="text-sm">
+                  <span className="text-gray-600">Welcome, </span>
+                  <span className="font-medium text-gray-800">
+                    {user.firstName || user.emailAddress || 'User'}
+                  </span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  icon="LogOut"
+                  onClick={logout}
+                >
+                  Logout
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={isMobileMenuOpen ? "X" : "Menu"}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            />
+          </div>
         </div>
 
         {/* Mobile Menu */}
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{
-            opacity: isMobileMenuOpen ? 1 : 0,
-            height: isMobileMenuOpen ? 'auto' : 0
-          }}
-          className="md:hidden overflow-hidden"
-        >
-          <nav className="py-4 space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
-                  ${isActive(item.path)
-                    ? 'bg-gradient-to-r from-primary-100 to-primary-200 text-primary-700'
-                    : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
-                  }
-                `}
-              >
-                <ApperIcon name={item.icon} size={16} />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </motion.div>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden bg-white border-t border-gray-200 py-4"
+          >
+            <div className="space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`
+                    flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
+                    ${isActive(item.href)
+                      ? 'bg-gradient-to-r from-primary-100 to-primary-200 text-primary-700'
+                      : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
+                    }
+                  `}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <ApperIcon name={item.icon} size={16} />
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            
+            <div className="pt-4 border-t border-gray-200">
+              {user && (
+                <div className="space-y-3">
+                  <div className="text-sm text-gray-600">
+                    Welcome, {user.firstName || user.emailAddress || 'User'}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    icon="LogOut" 
+                    className="w-full"
+                    onClick={logout}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
       </div>
     </motion.header>
   );
