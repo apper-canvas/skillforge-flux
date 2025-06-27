@@ -1,26 +1,29 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { courseService } from '@/services/api/courseService';
-import { progressService } from '@/services/api/progressService';
-import CourseSidebar from '@/components/organisms/CourseSidebar';
-import VideoPlayer from '@/components/molecules/VideoPlayer';
-import QuizInterface from '@/components/molecules/QuizInterface';
-import Button from '@/components/atoms/Button';
-import ApperIcon from '@/components/ApperIcon';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { generateCertificate } from "@/services/certificateService";
+import CertificateTemplate from "@/components/molecules/CertificateTemplate";
+import { courseService } from "@/services/api/courseService";
+import { progressService } from "@/services/api/progressService";
+import ApperIcon from "@/components/ApperIcon";
+import VideoPlayer from "@/components/molecules/VideoPlayer";
+import QuizInterface from "@/components/molecules/QuizInterface";
+import CourseSidebar from "@/components/organisms/CourseSidebar";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Button from "@/components/atoms/Button";
 
 const LearningInterface = () => {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
-  const [course, setCourse] = useState(null);
+const [course, setCourse] = useState(null);
   const [currentLesson, setCurrentLesson] = useState(null);
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [generatingCertificate, setGeneratingCertificate] = useState(false);
+  const certificateRef = useRef();
   useEffect(() => {
     loadCourse();
     loadProgress();
@@ -130,10 +133,36 @@ const LearningInterface = () => {
     markLessonComplete();
   };
 
-  const handleQuizComplete = () => {
+const handleQuizComplete = () => {
     markLessonComplete();
   };
+  const calculateProgress = () => {
+    if (!course?.modules || !progress) return 0;
+    
+    const totalLessons = course.modules.reduce((acc, module) => acc + module.lessons.length, 0);
+    const completedLessons = Object.values(progress.completedLessons || {}).filter(Boolean).length;
+    
+    return totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+  };
 
+  const handleDownloadCertificate = async () => {
+    const progressPercentage = calculateProgress();
+    
+    if (progressPercentage < 100) {
+      toast.warning('Complete all lessons to download your certificate');
+      return;
+    }
+
+    try {
+      setGeneratingCertificate(true);
+      await generateCertificate(certificateRef, course);
+      toast.success('Certificate downloaded successfully!');
+    } catch (error) {
+      toast.error(error.message || 'Failed to generate certificate');
+    } finally {
+      setGeneratingCertificate(false);
+    }
+  };
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -187,7 +216,7 @@ const LearningInterface = () => {
                 <p className="text-gray-600 capitalize">
                   {currentLesson.type} • {currentLesson.duration || 10} minutes
                 </p>
-              </div>
+</div>
               
               <div className="flex items-center gap-2">
                 {progress?.completedLessons?.[currentLesson.id] && (
@@ -196,9 +225,19 @@ const LearningInterface = () => {
                     <span className="text-sm font-medium">Completed</span>
                   </div>
                 )}
+                {calculateProgress() === 100 && (
+                  <Button
+                    onClick={handleDownloadCertificate}
+                    loading={generatingCertificate}
+                    variant="amber"
+                    size="sm"
+                    icon="Award"
+                  >
+                    Certificate
+                  </Button>
+                )}
               </div>
             </div>
-            
             {/* Navigation */}
             <div className="flex items-center justify-between">
               <Button
@@ -259,11 +298,20 @@ const LearningInterface = () => {
             course={course}
             currentLessonId={lessonId}
             progress={progress}
-          />
+/>
         </div>
       </div>
+
+      {/* Hidden Certificate Template */}
+      <div className="absolute -left-[9999px] -top-[9999px]">
+        <CertificateTemplate
+          ref={certificateRef}
+          course={course}
+          completionDate={progress?.lastAccessed || new Date().toISOString()}
+          studentName="Student"
+        />
+      </div>
     </div>
-  );
 };
 
 export default LearningInterface;

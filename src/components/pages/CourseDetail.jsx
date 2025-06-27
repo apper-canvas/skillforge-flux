@@ -1,25 +1,28 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { courseService } from '@/services/api/courseService';
-import { progressService } from '@/services/api/progressService';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import Badge from '@/components/atoms/Badge';
-import ProgressRing from '@/components/atoms/ProgressRing';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { generateCertificate } from "@/services/certificateService";
+import CertificateTemplate from "@/components/molecules/CertificateTemplate";
+import { courseService } from "@/services/api/courseService";
+import { progressService } from "@/services/api/progressService";
+import ApperIcon from "@/components/ApperIcon";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import ProgressRing from "@/components/atoms/ProgressRing";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
-  const navigate = useNavigate();
+const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [enrolling, setEnrolling] = useState(false);
-
+  const [generatingCertificate, setGeneratingCertificate] = useState(false);
+  const certificateRef = useRef();
   useEffect(() => {
     loadCourse();
     loadProgress();
@@ -109,9 +112,25 @@ const CourseDetail = () => {
     switch (difficulty?.toLowerCase()) {
       case 'beginner': return 'beginner';
       case 'intermediate': return 'intermediate';
-      case 'advanced': return 'advanced';
+case 'advanced': return 'advanced';
       default: return 'default';
     }
+  };
+  const handleDownloadCertificate = async () => {
+    if (progressPercentage < 100) {
+      toast.warning('Complete the course to download your certificate');
+      return;
+    }
+
+    try {
+      setGeneratingCertificate(true);
+      await generateCertificate(certificateRef, course);
+      toast.success('Certificate downloaded successfully!');
+    } catch (error) {
+      toast.error(error.message || 'Failed to generate certificate');
+    } finally {
+      setGeneratingCertificate(false);
+}
   };
 
   if (loading) {
@@ -183,7 +202,7 @@ const CourseDetail = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
+<div className="flex items-center gap-4">
               {isEnrolled ? (
                 <>
                   <Button
@@ -194,6 +213,17 @@ const CourseDetail = () => {
                   >
                     Continue Learning
                   </Button>
+                  {progressPercentage === 100 && (
+                    <Button
+                      onClick={handleDownloadCertificate}
+                      loading={generatingCertificate}
+                      variant="amber"
+                      size="lg"
+                      icon="Award"
+                    >
+                      Download Certificate
+                    </Button>
+                  )}
                   <div className="flex items-center gap-3">
                     <ProgressRing progress={progressPercentage} size={60} strokeWidth={6} />
                     <div>
@@ -201,6 +231,11 @@ const CourseDetail = () => {
                       <p className="text-sm font-medium text-gray-800">
                         {Math.round(progressPercentage)}% Complete
                       </p>
+                      {progressPercentage === 100 && (
+                        <p className="text-xs text-amber-600 font-medium">
+                          🎉 Course Completed!
+                        </p>
+                      )}
                     </div>
                   </div>
                 </>
@@ -340,10 +375,19 @@ const CourseDetail = () => {
               ))}
             </div>
           </div>
-        </motion.div>
+</motion.div>
+      </div>
+
+      {/* Hidden Certificate Template */}
+      <div className="absolute -left-[9999px] -top-[9999px]">
+        <CertificateTemplate
+          ref={certificateRef}
+          course={course}
+          completionDate={progress?.lastAccessed || new Date().toISOString()}
+          studentName="Student"
+        />
       </div>
     </div>
-  );
 };
 
 export default CourseDetail;
