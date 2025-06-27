@@ -77,14 +77,17 @@ const VideoPlayer = ({ lesson, onProgress, onComplete }) => {
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      {/* Video Element */}
+{/* Video Element */}
       <video
         ref={videoRef}
         className="w-full aspect-video object-cover"
         onClick={togglePlay}
         poster={`https://picsum.photos/800/450?random=${lesson.id}`}
       >
-        <source src={lesson.videoUrl || `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`} type="video/mp4" />
+        <source 
+          src={lesson.videoUrl || `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`} 
+          type="video/mp4" 
+        />
         Your browser does not support the video tag.
       </video>
 

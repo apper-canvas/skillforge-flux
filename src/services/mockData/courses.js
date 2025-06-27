@@ -9,7 +9,7 @@ export const coursesData = [
     duration: 8,
     description: "Learn the basics of React including components, state, and props. Perfect for beginners starting their React journey.",
     modules: [
-      {
+{
         id: "1-1",
         title: "Introduction to React",
         lessons: [
@@ -19,7 +19,8 @@ export const coursesData = [
             type: "video",
             duration: 15,
             completed: false,
-            content: "Introduction to React framework and its benefits"
+            content: "Introduction to React framework and its benefits",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
           },
           {
             id: "1-1-2",
@@ -27,7 +28,8 @@ export const coursesData = [
             type: "video",
             duration: 20,
             completed: false,
-            content: "How to set up a React development environment"
+            content: "How to set up a React development environment",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
           },
           {
             id: "1-1-3",
@@ -57,7 +59,7 @@ export const coursesData = [
       },
       {
         id: "1-2",
-        title: "Components and JSX",
+title: "Components and JSX",
         lessons: [
           {
             id: "1-2-1",
@@ -65,7 +67,8 @@ export const coursesData = [
             type: "video",
             duration: 25,
             completed: false,
-            content: "Learn about React components and how to create them"
+            content: "Learn about React components and how to create them",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
           },
           {
             id: "1-2-2",
@@ -73,8 +76,9 @@ export const coursesData = [
             type: "video",
             duration: 18,
             completed: false,
-            content: "Understanding JSX and how it works"
-          },
+            content: "Understanding JSX and how it works",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+},
           {
             id: "1-2-3",
             title: "Components Quiz",
@@ -109,7 +113,7 @@ export const coursesData = [
     modules: [
       {
         id: "2-1",
-        title: "ES6+ Features",
+title: "ES6+ Features",
         lessons: [
           {
             id: "2-1-1",
@@ -117,7 +121,8 @@ export const coursesData = [
             type: "video",
             duration: 20,
             completed: false,
-            content: "Learn about arrow functions and their benefits"
+            content: "Learn about arrow functions and their benefits",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
           },
           {
             id: "2-1-2",
@@ -125,7 +130,8 @@ export const coursesData = [
             type: "video",
             duration: 15,
             completed: false,
-            content: "Understanding destructuring in JavaScript"
+            content: "Understanding destructuring in JavaScript",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
           }
         ]
       }
@@ -143,7 +149,7 @@ export const coursesData = [
     modules: [
       {
         id: "3-1",
-        title: "Basic Greetings",
+title: "Basic Greetings",
         lessons: [
           {
             id: "3-1-1",
@@ -151,7 +157,8 @@ export const coursesData = [
             type: "video",
             duration: 12,
             completed: false,
-            content: "Learn basic Spanish greetings"
+            content: "Learn basic Spanish greetings",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
           },
           {
             id: "3-1-2",
@@ -159,7 +166,8 @@ export const coursesData = [
             type: "video",
             duration: 18,
             completed: false,
-            content: "Practice Spanish pronunciation"
+            content: "Practice Spanish pronunciation",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
           }
         ]
       }
@@ -177,7 +185,7 @@ export const coursesData = [
     modules: [
       {
         id: "4-1",
-        title: "Limits and Continuity",
+title: "Limits and Continuity",
         lessons: [
           {
             id: "4-1-1",
@@ -185,7 +193,8 @@ export const coursesData = [
             type: "video",
             duration: 30,
             completed: false,
-            content: "Understanding the concept of limits"
+            content: "Understanding the concept of limits",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
           },
           {
             id: "4-1-2",
@@ -193,7 +202,8 @@ export const coursesData = [
             type: "video",
             duration: 25,
             completed: false,
-            content: "Learn about limit laws and their applications"
+            content: "Learn about limit laws and their applications",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
           }
         ]
       }
@@ -211,7 +221,7 @@ export const coursesData = [
     modules: [
       {
         id: "5-1",
-        title: "Data Manipulation",
+title: "Data Manipulation",
         lessons: [
           {
             id: "5-1-1",
@@ -219,7 +229,8 @@ export const coursesData = [
             type: "video",
             duration: 35,
             completed: false,
-            content: "Introduction to pandas for data manipulation"
+            content: "Introduction to pandas for data manipulation",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
           }
         ]
       }
@@ -237,7 +248,7 @@ export const coursesData = [
     modules: [
       {
         id: "6-1",
-        title: "Everyday Conversations",
+title: "Everyday Conversations",
         lessons: [
           {
             id: "6-1-1",
@@ -245,7 +256,8 @@ export const coursesData = [
             type: "video",
             duration: 22,
             completed: false,
-            content: "Learn to order food in French"
+            content: "Learn to order food in French",
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
           }
         ]
       }
