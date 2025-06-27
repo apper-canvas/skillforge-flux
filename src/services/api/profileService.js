@@ -12,7 +12,7 @@ export const profileService = {
       });
 
       const params = {
-        fields: [
+fields: [
           { field: { Name: "Name" } },
           { field: { Name: "Tags" } },
           { field: { Name: "Owner" } },
@@ -20,6 +20,9 @@ export const profileService = {
           { field: { Name: "biography" } },
           { field: { Name: "interests" } },
           { field: { Name: "skills" } },
+          { field: { Name: "address" } },
+          { field: { Name: "phone" } },
+          { field: { Name: "email" } },
           { field: { Name: "CreatedOn" } },
           { field: { Name: "CreatedBy" } },
           { field: { Name: "ModifiedOn" } },
@@ -52,7 +55,7 @@ export const profileService = {
       });
 
       const params = {
-        fields: [
+fields: [
           { field: { Name: "Name" } },
           { field: { Name: "Tags" } },
           { field: { Name: "Owner" } },
@@ -60,6 +63,9 @@ export const profileService = {
           { field: { Name: "biography" } },
           { field: { Name: "interests" } },
           { field: { Name: "skills" } },
+          { field: { Name: "address" } },
+          { field: { Name: "phone" } },
+          { field: { Name: "email" } },
           { field: { Name: "CreatedOn" } },
           { field: { Name: "CreatedBy" } },
           { field: { Name: "ModifiedOn" } },
@@ -92,14 +98,17 @@ export const profileService = {
       });
 
       // Only include Updateable fields
-      const updateableData = {
+const updateableData = {
         Name: profileData.Name || '',
         Tags: profileData.Tags || '',
         Owner: profileData.Owner || null,
         user_id: profileData.user_id || null,
         biography: profileData.biography || '',
         interests: profileData.interests || '',
-        skills: profileData.skills || ''
+        skills: profileData.skills || '',
+        address: profileData.address || '',
+        phone: profileData.phone || '',
+        email: profileData.email || ''
       };
 
       const params = {
@@ -141,7 +150,7 @@ export const profileService = {
       });
 
       // Only include Updateable fields
-      const updateableData = {
+const updateableData = {
         Id: parseInt(id),
         Name: profileData.Name || '',
         Tags: profileData.Tags || '',
@@ -149,7 +158,10 @@ export const profileService = {
         user_id: profileData.user_id || null,
         biography: profileData.biography || '',
         interests: profileData.interests || '',
-        skills: profileData.skills || ''
+        skills: profileData.skills || '',
+        address: profileData.address || '',
+        phone: profileData.phone || '',
+        email: profileData.email || ''
       };
 
       const params = {

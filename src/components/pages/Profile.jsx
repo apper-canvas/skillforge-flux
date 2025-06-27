@@ -15,11 +15,14 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     Name: '',
     biography: '',
     interests: '',
-    skills: ''
+    skills: '',
+    address: '',
+    phone: '',
+    email: ''
   });
 
   // Load user profile on component mount
@@ -37,20 +40,26 @@ const Profile = () => {
         
         if (userProfile) {
           setProfile(userProfile);
-          setFormData({
+setFormData({
             Name: userProfile.Name || '',
             biography: userProfile.biography || '',
             interests: userProfile.interests || '',
-            skills: userProfile.skills || ''
+            skills: userProfile.skills || '',
+            address: userProfile.address || '',
+            phone: userProfile.phone || '',
+            email: userProfile.email || ''
           });
         } else {
           // No profile exists for user
           setProfile(null);
-          setFormData({
+setFormData({
             Name: user.firstName || user.emailAddress || '',
             biography: '',
             interests: '',
-            skills: ''
+            skills: '',
+            address: '',
+            phone: '',
+            email: user.emailAddress || ''
           });
         }
       } catch (err) {
@@ -106,11 +115,14 @@ const Profile = () => {
 
   const handleCancel = () => {
     if (profile) {
-      setFormData({
+setFormData({
         Name: profile.Name || '',
         biography: profile.biography || '',
         interests: profile.interests || '',
-        skills: profile.skills || ''
+        skills: profile.skills || '',
+        address: profile.address || '',
+        phone: profile.phone || '',
+        email: profile.email || ''
       });
     }
     setIsEditing(false);
@@ -287,6 +299,69 @@ const Profile = () => {
                 ) : (
                   <p className="text-gray-700 whitespace-pre-wrap">
                     {formData.skills || 'No skills listed'}
+                  </p>
+                )}
+</div>
+
+              {/* Address Field */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ApperIcon name="MapPin" size={20} className="text-primary-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Address</h3>
+                </div>
+                {isEditing ? (
+                  <textarea
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    rows={3}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                    placeholder="Enter your address"
+                  />
+                ) : (
+                  <p className="text-gray-700 whitespace-pre-wrap">
+                    {formData.address || 'No address provided'}
+                  </p>
+                )}
+              </div>
+
+              {/* Phone Field */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ApperIcon name="Phone" size={20} className="text-primary-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Phone</h3>
+                </div>
+                {isEditing ? (
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    placeholder="Enter your phone number"
+                  />
+                ) : (
+                  <p className="text-gray-700">
+                    {formData.phone || 'No phone number provided'}
+                  </p>
+                )}
+              </div>
+
+              {/* Email Field */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ApperIcon name="Mail" size={20} className="text-primary-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Email</h3>
+                </div>
+                {isEditing ? (
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    placeholder="Enter your email address"
+                  />
+                ) : (
+                  <p className="text-gray-700">
+                    {formData.email || 'No email provided'}
                   </p>
                 )}
               </div>
