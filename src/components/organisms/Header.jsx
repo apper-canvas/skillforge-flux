@@ -12,9 +12,10 @@ const Header = () => {
   const { user } = useSelector((state) => state.user);
   const { logout } = useContext(AuthContext);
 
-  const navItems = [
+const navItems = [
     { name: 'Courses', href: '/', icon: 'BookOpen' },
     { name: 'Dashboard', href: '/dashboard', icon: 'BarChart3' },
+    { name: 'Profile', href: '/profile', icon: 'User' },
     { name: 'Community', href: '/community', icon: 'Users' },
   ];
 

@@ -9,6 +9,7 @@ import CourseCatalog from '@/components/pages/CourseCatalog';
 import CourseDetail from '@/components/pages/CourseDetail';
 import LearningInterface from '@/components/pages/LearningInterface';
 import Dashboard from '@/components/pages/Dashboard';
+import Profile from '@/components/pages/Profile';
 import Community from '@/components/pages/Community';
 import NewDiscussion from '@/components/pages/NewDiscussion';
 import DiscussionThread from '@/components/pages/DiscussionThread';
@@ -145,11 +146,11 @@ function AppContent() {
             <Route path="/learn/:courseId/:lessonId" element={<LearningInterface />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/community" element={<Community />} />
-            <Route path="/community/new" element={<NewDiscussion />} />
+<Route path="/community/new" element={<NewDiscussion />} />
             <Route path="/community/thread/:threadId" element={<DiscussionThread />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </motion.main>
-        
         <ToastContainer
           position="top-right"
           autoClose={3000}
