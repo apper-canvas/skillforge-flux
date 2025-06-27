@@ -3,10 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { generateCertificate } from "@/services/certificateService";
-import CertificateTemplate from "@/components/molecules/CertificateTemplate";
 import { courseService } from "@/services/api/courseService";
 import { progressService } from "@/services/api/progressService";
 import ApperIcon from "@/components/ApperIcon";
+import CertificateTemplate from "@/components/molecules/CertificateTemplate";
 import VideoPlayer from "@/components/molecules/VideoPlayer";
 import QuizInterface from "@/components/molecules/QuizInterface";
 import CourseSidebar from "@/components/organisms/CourseSidebar";
@@ -293,12 +293,12 @@ const handleQuizComplete = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="lg:col-span-1">
+<div className="lg:col-span-1">
           <CourseSidebar
             course={course}
             currentLessonId={lessonId}
             progress={progress}
-/>
+          />
         </div>
       </div>
 
@@ -309,9 +309,10 @@ const handleQuizComplete = () => {
           course={course}
           completionDate={progress?.lastAccessed || new Date().toISOString()}
           studentName="Student"
-        />
+/>
       </div>
     </div>
+  );
 };
 
 export default LearningInterface;
