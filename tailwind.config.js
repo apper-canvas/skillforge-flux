@@ -33,11 +33,12 @@ export default {
           800: '#92400E',
           900: '#78350F'
         },
-        surface: '#F8F7FF',
+surface: '#F8F7FF',
         success: '#10B981',
         warning: '#F59E0B',
         error: '#EF4444',
-        info: '#3B82F6'
+        info: '#3B82F6',
+        border: '#e5e7eb'
       },
       fontFamily: {
         'display': ['Plus Jakarta Sans', 'sans-serif'],
