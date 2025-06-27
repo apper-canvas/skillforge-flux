@@ -107,7 +107,7 @@ export const progressService = {
     }
   },
 
-  async create(progressItem) {
+async create(progressItem) {
     try {
       await delay(300);
       
@@ -133,7 +133,6 @@ export const progressService = {
       
       if (!response.success) {
         console.error(response.message);
-        toast.error(response.message);
         throw new Error(response.message);
       }
       
@@ -146,9 +145,9 @@ export const progressService = {
           
           failedRecords.forEach(record => {
             record.errors?.forEach(error => {
-              toast.error(`${error.fieldLabel}: ${error.message}`);
+              console.error(`${error.fieldLabel}: ${error.message}`);
             });
-            if (record.message) toast.error(record.message);
+            if (record.message) console.error(record.message);
           });
         }
         
@@ -164,9 +163,15 @@ export const progressService = {
             lastAccessed: newProgress.last_accessed
           };
         }
+        
+        // If we have results but no successful records, throw appropriate error
+        if (failedRecords.length > 0) {
+          throw new Error(`Failed to create progress: ${failedRecords[0].message || 'Unknown error'}`);
+        }
       }
       
-      throw new Error('Failed to create progress');
+      // Fallback for successful response but no results data
+      throw new Error('Progress creation completed but no data returned from server');
     } catch (error) {
       console.error("Error creating progress:", error);
       throw error;
