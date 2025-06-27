@@ -3,10 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { generateCertificate } from "@/services/certificateService";
-import CertificateTemplate from "@/components/molecules/CertificateTemplate";
 import { courseService } from "@/services/api/courseService";
 import { progressService } from "@/services/api/progressService";
 import ApperIcon from "@/components/ApperIcon";
+import CertificateTemplate from "@/components/molecules/CertificateTemplate";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import ProgressRing from "@/components/atoms/ProgressRing";
@@ -116,7 +116,7 @@ case 'advanced': return 'advanced';
       default: return 'default';
     }
   };
-  const handleDownloadCertificate = async () => {
+const handleDownloadCertificate = async () => {
     if (progressPercentage < 100) {
       toast.warning('Complete the course to download your certificate');
       return;
@@ -130,7 +130,7 @@ case 'advanced': return 'advanced';
       toast.error(error.message || 'Failed to generate certificate');
     } finally {
       setGeneratingCertificate(false);
-}
+    }
   };
 
   if (loading) {
@@ -385,9 +385,10 @@ case 'advanced': return 'advanced';
           course={course}
           completionDate={progress?.lastAccessed || new Date().toISOString()}
           studentName="Student"
-        />
+/>
       </div>
     </div>
+  );
 };
 
 export default CourseDetail;
