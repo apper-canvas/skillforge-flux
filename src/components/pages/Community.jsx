@@ -223,7 +223,7 @@ const Community = () => {
         </div>
       )}
 
-      {/* Floating Action Button */}
+{/* Floating Action Button */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -235,6 +235,7 @@ const Community = () => {
           size="lg"
           icon="Plus"
           className="rounded-full shadow-2xl hover:shadow-3xl"
+          onClick={() => navigate('/community/new')}
         >
           New Discussion
         </Button>
